@@ -13,39 +13,32 @@ export default function TodoApp() {
   const [user, setUser] = useState(null);
 
 
+// to recive data from fire store
   useEffect(() => {
-    // Set up a listener to track changes in the user's authentication state
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
-        // If a user is authenticated, set the user state to the current user
         setUser(currentUser);
       } else {
-        // If no user is authenticated, set the user state to null
         setUser(null);
       }
     });
   
-    // Clean up the authentication state listener when the component unmounts
     return () => unsubscribeAuth(); 
-  }, []); // Only run once on component mount (empty dependency array)
+  }, []); 
   
-
+// for real time update
   useEffect(() => {
-    // Check if the user is not logged in
     if (!user) {
-      setLoading(false); // Stop loading if no user is authenticated
+      setLoading(false);
       return;
     }
   
-    // Set up a real-time listener for the user's todos
     const unsubscribe = listenUserTodos((todos) => {
-      setTodos(todos); // Update the state with the fetched todos
-      setLoading(false); // Stop loading once the todos are fetched
+      setTodos(todos); 
+      setLoading(false);
     });
-  
-    // Clean up the listener when the component unmounts or user changes
     return () => unsubscribe(); 
-  }, [user]); // Re-run the effect when the `user` state changes
+  }, [user]);
   
   // Spinners for loading
   if (loading) {
