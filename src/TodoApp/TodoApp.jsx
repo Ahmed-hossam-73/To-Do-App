@@ -32,7 +32,7 @@ import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import { app } from "../firebase";
 import OnProgress from "../OnProgress/OnProgress";
 import Done from "../Done/Done";
-import Data from "./data"; // Component for 'All' tasks
+import Data from "./Data"; // Component for 'All' tasks
 
 // Firebase Authentication & Firestore
 const auth = getAuth();
