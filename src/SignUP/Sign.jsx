@@ -1,71 +1,82 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import '../firebase';
-import Button from '@mui/material/Button';
+import { Button, TextField, Box, Typography, Alert } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// create color in Material Ui
+
+// Custom Material UI theme
 const theme = createTheme({
   palette: {
-    Dark: {
-      main: 'rgba(255, 0, 0, 0)',
-      contrastText: 'white',
+    primary: {
+      main: '#FFC107',
+    },
+    secondary: {
+      main: '#DFA805',
     },
   },
 });
 
 export default function Sign() {
-  // change submit to login  
-  const handleSignup = (event) => {
-    event.preventDefault();
-    signup();
+  const [formData, setFormData] = useState({ name: "", email: "", password: "" });
+  const [error, setError] = useState("");
+
+  const auth = getAuth();
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  // check inputs valid 
-  const validate = (regex, value, element) => {
-    const errorDiv = document.getElementById("error");
-    if (!regex.test(value)) {
-      element.classList.add("is-invalid");
-      errorDiv.textContent = "Invalid input. Please follow the required pattern.";
-    } else {
-      element.classList.remove("is-invalid");
-      errorDiv.textContent = "";
+
+  // Validate form input
+  const validateInput = (regex, value) => regex.test(value);
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    const { email, password } = formData;
+
+    // Validate form fields
+    if (!validateInput(/^[A-z]{3,}$/, formData.name)) {
+      setError("Invalid name. Minimum 3 characters required.");
+      return;
+    }
+    if (!validateInput(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, email)) {
+      setError("Invalid email format.");
+      return;
+    }
+    if (!validateInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, password)) {
+      setError("Password must be at least 8 characters with uppercase, lowercase, number, and special character.");
+      return;
+    }
+
+    setError("");
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("User details:", user);
+      window.location.href = "../login";
+    } catch (err) {
+      console.log(err.message)
+      setError("This Email have an account already");
     }
   };
 
   return (
-    <>
-      <div className="container my-5 text-center">
-        <div className="group m-auto w-75 p-5">
-          <h1>Sign Up</h1>
+    <ThemeProvider theme={theme}>
+      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="background.default"  sx={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../../public/images06.jpg')`,backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',}}>
+        <Box sx={{padding: 4, backgroundColor: '#212529', borderRadius: 2, maxWidth: 400, textAlign: 'center', }} >
+          <Typography variant="h4" style={{color :'#FFC107'}} gutterBottom> Sign Up </Typography>
+          {error && <Alert severity="error" sx={{ marginBottom: 2 }}>{error}</Alert>}
           <form onSubmit={handleSignup}>
-            <input className="form-control my-3" placeholder="Enter your name" type="text" id="yourname" onInput={(e) => validate(/^[A-z]{3,}$/, e.target.value, e.target)} />
-            <input className="form-control my-3" placeholder="Enter your email" type="email" id="email" onInput={(e) => validate(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, e.target.value, e.target)} />
-            <input className="form-control my-3" placeholder="Enter your password" type="password" id="password" onInput={(e) => validate(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, e.target.value, e.target)} />
-            <div id="error" className="text-danger"></div>
-            <ThemeProvider theme={theme}><Button variant="contained" color="Dark"className="btn btn-outline-dark text-white w-100 my-3" type="submit">Sign Up</Button></ThemeProvider>
+            <TextField fullWidth margin="normal" label="Name" name="name" variant="outlined" value={formData.name} onChange={handleChange} color="primary" required  sx={{ backgroundColor: 'white', color: 'black' }} />
+            <TextField fullWidth margin="normal" label="Email" name="email" type="email" variant="outlined" value={formData.email} onChange={handleChange} color="primary" required  sx={{ backgroundColor: 'white', color: 'black' }} />
+            <TextField fullWidth margin="normal" label="Password" name="password" type="password" variant="outlined" value={formData.password} onChange={handleChange} color="primary" required  sx={{ backgroundColor: 'white', color: 'black' }} />
+            <Button variant="contained" color="primary" fullWidth type="submit" sx={{ marginY: 2 }} > Sign Up </Button>
           </form>
-          <p className="text-white">You have an account? <Link to='../Login' className="text-white">Login</Link></p>
-        </div>
-      </div>
-    </>
+          <Typography color="white"> Already have an account? <Link to="../Login" style={{ color: '#FFC107', textDecoration: 'none' }}>Login</Link> </Typography>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
-
-const auth = getAuth();
-// sign up function
-function signup() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  // sign up from fire base website
-  createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up
-      const user = userCredential.user;
-      alert("Sign up successful!");
-      console.log("User details:", user);
-    })
-    .catch((error) => {
-      const errorDiv = document.getElementById("error");
-      errorDiv.textContent = `Error: ${error.message}`;
-    });
-}
-

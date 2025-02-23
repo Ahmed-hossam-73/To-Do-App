@@ -3,27 +3,27 @@
     color: white;
 }
 
-body {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../../public/images06.jpg);
+body{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(../../public/images06.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
     font-family: 'Titillium Web', sans-serif;
 }
 h1 {
-    color: white;
+    color:#FFC107;
     font-size: 2.5rem;
     font-weight: 500;
 }
 
 .group {
     box-shadow: -5px 2px 54px -9px rgba(0, 0, 0, 1);
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.8);
 }
 input,
 textarea {
-    background-color: transparent !important;
-    color: #fff !important;
+    background-color: white!important;
+    color: black !important;
 }
 
 input::placeholder,
@@ -46,4 +46,17 @@ p{
 }
 .alert{
     padding: 0.25rem !important;
+}
+
+.btn{
+    background-color: #FFC107 !important;
+}
+.btn:hover{
+    background-color: #DFA805 !important;
+}
+.link{
+    color: #FFC107;
+}
+.link:hover{
+    color: #DFA805;
 }

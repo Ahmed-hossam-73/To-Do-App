@@ -1,72 +1,63 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import './Login.css';
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import '../firebase';
-import Button from '@mui/material/Button';
+import { Button, TextField, Typography, Box, Alert } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-// create color in Material Ui
+
+// Create custom Material UI theme
 const theme = createTheme({
   palette: {
-    Dark: {
-      main: 'rgba(255, 0, 0, 0)',
-      contrastText: 'white',
+    primary: {
+      main: '#FFC107',
     },
+    secondary: {
+      main: '#DFA805',
+    },
+  },
+  typography: {
+    fontFamily: `'Titillium Web', 'sans-serif'`,
   },
 });
 
+// login
 export default function Login() {
-  // make submit button login button
-  const handleLogin = (event) => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const auth = getAuth();
+
+  const handleLogin = async (event) => {
     event.preventDefault();
-    login();
-  };
-  // check if inputs is valid or not
-  const validateInput = (regex, value, element) => {
-    const errorDiv = document.getElementById("error");
-    if (!regex.test(value)) {
-      element.classList.add("is-invalid");
-      errorDiv.textContent = "Invalid input. Please enter valid details.";
-    } else {
-      element.classList.remove("is-invalid");
-      errorDiv.textContent = "";
+
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("User details:", user);
+      window.location.href = '../TodoApp';
+    } catch (err) {
+      console.log(err.message)
+      setError("Oops! We couldn't find an account with that email or password. Double-check or create a new one");
     }
   };
 
   return (
-    <>
-      <div className="container my-5 text-center">
-        <div className="group m-auto w-75 p-5">
-          <h1>Login</h1>
+    <ThemeProvider theme={theme}>
+      <Box display="flex" alignItems="center" justifyContent="center" minHeight="100vh" bgcolor="background.default"  sx={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('../../public/images06.jpg')`,backgroundSize: 'cover', backgroundRepeat: 'no-repeat', backgroundPosition: 'center',}}>
+        <Box sx={{ padding: 4, backgroundColor: '#212529', borderRadius: 2, maxWidth: 400, textAlign: 'center', }} >
+          <Typography variant="h4"  style={{color :'#FFC107'}} gutterBottom>
+            Login
+          </Typography>
+          {error && <Alert severity="error" sx={{ marginBottom: 2 }}>{error}</Alert>}
           <form onSubmit={handleLogin}>
-            <input className="form-control my-3" placeholder="Enter your email" type="text" id="email" onInput={(e) => validateInput(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, e.target.value, e.target)} />
-            <input className="form-control my-3" placeholder="Enter your password" type="password" id="password" onInput={(e) => validateInput(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/, e.target.value, e.target)}/>
-            <div id="error" className="text-danger"></div>
-            <ThemeProvider theme={theme}><Button variant="contained" color="Dark"className="btn btn-outline-dark text-white w-100 my-3" type="submit" onClick={login}>Login</Button></ThemeProvider>
+            <TextField fullWidth margin="normal" variant="outlined" label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required color="primary" sx={{ backgroundColor: 'white', color: 'black' }} />
+            <TextField fullWidth margin="normal" variant="outlined" label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required color="primary" sx={{ backgroundColor: 'white', color: 'black' }} />
+            <Button variant="contained" color="primary" fullWidth type="submit" sx={{ marginY: 2, color:'white' }}> Login </Button>
           </form>
-          <p className="text-white">
-            Don{`'`}t have an account? <Link to="../Sign" className="text-white">Sign Up</Link>
-          </p>
-        </div>
-      </div>
-    </>
+          <Typography color="white"> Don{`'`}t have an account? <Link to="../Sign" style={{ color: '#FFC107', textDecoration: 'none' }}>Sign Up</Link> </Typography>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
-}
-
-const auth = getAuth();
-// login
-function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  // sign in with fire auth code from the website 
-  signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
-      window.location.href='../TodoApp'
-      console.log("User details:", user);
-    })
-    .catch((error) => {
-      const errorDiv = document.getElementById("error");
-      errorDiv.textContent = `Error: ${error.message}`;
-    });
 }

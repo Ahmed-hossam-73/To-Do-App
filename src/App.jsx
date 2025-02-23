@@ -1,4 +1,5 @@
 
+import { Search } from "@mui/icons-material";
 import Done from "./Done/Done";
 import Layout from "./Layout/Layout";
 import Login from "./login/Login"
@@ -18,6 +19,7 @@ function App() {
         {path:"TodoApp",element:<TodoApp/>},
         {path:"Done",element:<Done/>},
         {path:"OnProgress",element:<OnProgress/>},
+        {path:"Search",element:<Search/>},
       ]
     }
   ])

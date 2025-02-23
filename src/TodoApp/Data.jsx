@@ -3,7 +3,7 @@ import {
   listenUserTodos,
   deleteTodo,
   toggleTodoCompletion,
-} from "../TodoApp/firebaseService";
+} from "./firebaseService";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { doc, getFirestore, updateDoc } from "firebase/firestore";
 import { app } from "../firebase";
@@ -48,7 +48,7 @@ const style = {
 };
 
 
-export default function OnProgress() {
+export default function Data() {
   const [todos, setTodos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
@@ -134,7 +134,6 @@ export default function OnProgress() {
     setOpen(false);
     setLoading(false);
   };
-
   return (
     <div>
       {loading ? (
@@ -144,54 +143,22 @@ export default function OnProgress() {
           </div>
         </div>
       ) : (
-        <ul className="list-group mt-3">
-          {todos.some(todo => !todo.completed) ? (
-            // Render only the tasks that are not completed
-            todos.map((todo) => (
-              !todo.completed && (
-                <li key={todo.id} className="list-group-item d-flex justify-content-between align-items-center bg-dark border-0 text-white">
-                  <span style={{ textDecoration: todo.completed ? "line-through" : "none",fontSize:'20px' }}>
-                    {todo.task}
-                  </span>
-                  <div className="d-flex gap-2">
-                    <Button
-                      variant="success"
-                      className="btn-sm"
-                      onClick={() => handleToggleCompletion(todo.id, todo.completed)}
-                    >
-                      {todo.completed ? "Undo" : "Complete"}
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="btn-sm"
-                      onClick={() => handleDelete(todo.id)}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant="primary"
-                      className="btn-sm"
-                      onClick={() => {
-                        setActiveTodoId(todo.id);
-                        setEditTitle(todo.task);
-                        setEditCompleted(todo.completed);
-                        handleOpen();
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </div>
-                </li>
-              )
-            ))
+        <ul className="list-group">
+          {todos.length === 0 ? (
+            <h5 className="text-secondary mt-4"> There are no tasks available.</h5>
           ) : (
-            // Show message if there are no incomplete tasks
-            <div className="alert alert-info" role="alert">
-              No incomplete tasks available.
-            </div>
+            todos.map((todo) => (
+              <li key={todo.id} className="list-group-item d-flex justify-content-between align-items-center bg-dark border-0 text-white" >
+                <span style={{ textDecoration: todo.completed ? "line-through" : "none",fontSize:'20px' }}>{todo.task}</span>
+                <div className="d-flex gap-2">
+                  <Button variant="success" className="btn-sm" onClick={() => handleToggleCompletion(todo.id, todo.completed)} > {todo.completed ? "Undo" : "Complete"} </Button>
+                  <Button variant="danger" className="btn-sm" onClick={() => handleDelete(todo.id)}>Delete</Button>
+                  <Button variant="primary" className="btn-sm" onClick={() => { setActiveTodoId(todo.id); setEditTitle(todo.task); setEditCompleted(todo.completed); handleOpen(); }}>Edit</Button>
+                </div>
+              </li>
+            ))
           )}
         </ul>
-
       )}
 
       {/* Add the reference to the bottom of the list */}
@@ -222,3 +189,18 @@ export default function OnProgress() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
